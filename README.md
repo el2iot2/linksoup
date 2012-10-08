@@ -35,8 +35,8 @@ This project is in an "alpha" status, and not yet suitable for casual use.
 ###To Do
 
  * Port twitter-text 
-   * <s>make routines lint friend(lier)</s>
-   * <s>remove unused/irrelevant routines</s>
+   * ~~make routines lint friend(lier)~~
+   * ~~remove unused/irrelevant routines~~
    * adapt url test cases
  * Support markdown style links
  * Ensure multi-use code
