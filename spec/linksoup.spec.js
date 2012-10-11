@@ -173,5 +173,23 @@ describe("linksoup", function() {
 			expect(spans[6].text).toBe("]");
 			expect(spans[6].href).not.toBeDefined();
 		});
+		
+		it("should handle '\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com'", function() {
+			var text = "\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com";
+			var spans = linksoup.parseSpans(text);
+			
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(4);
+			expect(spans[0].text).toBe("\uD801\uDC00 ");
+			expect(spans[0].href).not.toBeDefined();
+			expect(spans[1].text).toBeDefined();
+			expect(spans[1].href).toBe("http://twitter.com");
+			expect(spans[2].text).toBe(" \uD801\uDC00 ");
+			expect(spans[2].href).not.toBeDefined();
+			expect(spans[3].text).toBeDefined();
+			expect(spans[3].href).toBe("http://test.com");
+		});
+		
+		
 	});
 });
