@@ -12,7 +12,7 @@ var text = "Visit [my site](http://automatonic.net ""automanual"") (or http://tw
 
 ```javascript
 var spans = [{
-  text: "You should totally visit "
+  text: "Visit "
 },{
   text: "my site",
   title: "automanual",
