@@ -5,7 +5,7 @@ With a name inspired by the arcane art of [tag soup parsing](http://en.wikipedia
 When given a string:
 
 ```javascript
-var text = "Visit [my site](http://automatonic.net ""automanual"") (or http://twitter.com/automatonically)";
+var text = "Visit [my site](http://automatonic.net \"automanual\") (or http://twitter.com/automatonically)";
 ```
     
 *linksoup* returns structured data as "spans":
