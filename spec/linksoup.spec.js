@@ -1,46 +1,46 @@
 var linksoup = require('../lib/linksoup.js');
 
-describe("linksoup", function() {
-	describe("when parsing spans", function() {
-	
-		beforeEach(function() {
+describe("linksoup", function () {
+	describe("when parsing spans", function () {
+		
+		beforeEach(function () {
 			this.addMatchers({
-				toBeText: function(expectedText) {
+				toBeText : function (expectedText) {
 					var actual = this.actual;
 					this.message = function () {
-						return "Expected a text span '" + expectedText +"' but got '" + JSON.stringify(actual) + "'";
-					}
-					return actual && "text" in actual && !("href" in actual) && actual.text ===  expectedText;
+						return "Expected a text span '" + expectedText + "' but got '" + JSON.stringify(actual) + "'";
+					};
+					return actual && "text" in actual && !("href" in actual) && actual.text === expectedText;
 				}
 			});
 			this.addMatchers({
-				toBeHref: function(expectedHref, expectedText, expectedTitle) {
+				toBeHref : function (expectedHref, expectedText, expectedTitle) {
 					var actual = this.actual;
 					var textMessage = "";
-					var titleMessage = ""
-					if (expectedText) {
-						textMessage = "with text '"+expectedText+"' ";
-					}
-					if (expectedTitle) {
-						titleMessage = "with title '"+titleMessage+"' ";
-					}
-					
-					this.message = function () {
-						return "Expected a link span '" + expectedHref +"' "+textMessage+titleMessage+"but got '" + JSON.stringify(actual) + "'";
-					}
+					var titleMessage = "";
+						if (expectedText) {
+							textMessage = "with text '" + expectedText + "' ";
+						}
+						if (expectedTitle) {
+							titleMessage = "with title '" + expectedTitle + "' ";
+						}
+						
+						this.message = function () {
+						return "Expected a link span '" + expectedHref + "' " + textMessage + titleMessage + "but got '" + JSON.stringify(actual) + "'";
+					};
 					return actual &&
-						"href" in actual && 
-						actual.href === expectedHref &&
-						(!(expectedText) || actual.text === expectedText) &&
-						(!(expectedTitle) || actual.title === expectedTitle); 
+					"href" in actual &&
+					actual.href === expectedHref &&
+					(!(expectedText) || actual.text === expectedText) &&
+					(!(expectedTitle) || actual.title === expectedTitle);
 				}
 			});
 		});
-	
 		
 		//Trying to get all the algorithmic edge cases:
-		it("should handle 'text'", function() {
-			var i = 0, text = "text";
+		it("should handle 'text'", function () {
+			var i = 0,
+			text = "text";
 			expect(linksoup).toBeDefined();
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
@@ -48,8 +48,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("text");
 		});
 		
-		it("should handle 'http://automatonic.net'", function() {
-			var i = 0, text = "http://automatonic.net";
+		it("should handle 'http://automatonic.net'", function () {
+			var i = 0,
+			text = "http://automatonic.net";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
@@ -57,8 +58,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("http://automatonic.net");
 		});
 		
-		it("should handle '[a.com'", function() {
-			var i = 0, text = "[a.com";
+		it("should handle '[a.com'", function () {
+			var i = 0,
+			text = "[a.com";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
@@ -68,8 +70,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("a.com");
 		});
 		
-		it("should handle 'a.com]'", function() {
-			var i = 0, text = "a.com]";
+		it("should handle 'a.com]'", function () {
+			var i = 0,
+			text = "a.com]";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
@@ -79,8 +82,9 @@ describe("linksoup", function() {
 			
 		});
 		
-		it("should handle a prefix '[a.com]'", function() {
-			var i = 0, text = "[a.com]";
+		it("should handle a prefix '[a.com]'", function () {
+			var i = 0,
+			text = "[a.com]";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
@@ -90,8 +94,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("]");
 		});
 		
-		it("should handle 'a.com,b.com]'", function() {
-			var i = 0, text = "a.com,b.com]";
+		it("should handle 'a.com,b.com]'", function () {
+			var i = 0,
+			text = "a.com,b.com]";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
@@ -103,8 +108,9 @@ describe("linksoup", function() {
 			
 		});
 		
-		it("should handle '[a.com,b.com'", function() {
-			var i = 0, text = "[a.com,b.com";
+		it("should handle '[a.com,b.com'", function () {
+			var i = 0,
+			text = "[a.com,b.com";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(4);
@@ -114,8 +120,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("b.com");
 		});
 		
-		it("should handle '[a.com,b.com]'", function() {
-			var i = 0, text = "[a.com,b.com]";
+		it("should handle '[a.com,b.com]'", function () {
+			var i = 0,
+			text = "[a.com,b.com]";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(5);
@@ -126,8 +133,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("]");
 		});
 		
-		it("should handle 'a.com,b.com,c.net]'", function() {
-			var i = 0, text = "a.com,b.com,c.net]";
+		it("should handle 'a.com,b.com,c.net]'", function () {
+			var i = 0,
+			text = "a.com,b.com,c.net]";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(6);
@@ -139,8 +147,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("]");
 		});
 		
-		it("should handle '[a.com,b.com,c.net'", function() {
-			var i = 0, text = "[a.com,b.com,c.net";
+		it("should handle '[a.com,b.com,c.net'", function () {
+			var i = 0,
+			text = "[a.com,b.com,c.net";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
@@ -153,8 +162,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("c.net");
 		});
 		
-		it("should handle '[a.com,b.com,c.net]'", function() {
-			var i = 0, text = "[a.com,b.com,c.net]";
+		it("should handle '[a.com,b.com,c.net]'", function () {
+			var i = 0,
+			text = "[a.com,b.com,c.net]";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(7);
@@ -167,8 +177,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("]");
 		});
 		
-		it("should handle '\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com'", function() {
-			var i = 0, text = "\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com";
+		it("should handle '\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com'", function () {
+			var i = 0,
+			text = "\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
@@ -179,8 +190,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("http://test.com");
 		});
 		
-		it("should not markdown '(http://test.com)'", function() {
-			var i = 0, text = "(http://test.com)";
+		it("should not markdown '(http://test.com)'", function () {
+			var i = 0,
+			text = "(http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(3);
@@ -189,16 +201,18 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText(")");
 		});
 		
-		it("should markdown '[text](http://test.com)'", function() {
-			var i = 0, text = "[text](http://test.com)";
+		it("should markdown '[text](http://test.com)'", function () {
+			var i = 0,
+			text = "[text](http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(1);
 			expect(spans[i++]).toBeHref("http://test.com", "text");
 		});
 		
-		it("should markdown '  [text](http://test.com)'", function() {
-			var i = 0, text = "  [text](http://test.com)";
+		it("should markdown '  [text](http://test.com)'", function () {
+			var i = 0,
+			text = "  [text](http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans[i++]).toBeText("  ");
@@ -206,8 +220,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("http://test.com", "text");
 		});
 		
-		it("should markdown '[text](http://test.com)  '", function() {
-			var i = 0, text = "[text](http://test.com)  ";
+		it("should markdown '[text](http://test.com)  '", function () {
+			var i = 0,
+			text = "[text](http://test.com)  ";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(2);
@@ -215,16 +230,18 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("  ");
 		});
 		
-		it("should markdown '[text]  (http://test.com)'", function() {
-			var i = 0, text = "[text]  (http://test.com)";
+		it("should markdown '[text]  (http://test.com)'", function () {
+			var i = 0,
+			text = "[text]  (http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(1);
 			expect(spans[i++]).toBeHref("http://test.com", "text");
 		});
 		
-		it("should markdown 'prefix[text](http://test.com)'", function() {
-			var i = 0, text = "prefix[text](http://test.com)";
+		it("should markdown 'prefix[text](http://test.com)'", function () {
+			var i = 0,
+			text = "prefix[text](http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans[i++]).toBeText("prefix");
@@ -232,8 +249,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("http://test.com", "text");
 		});
 		
-		it("should markdown '[text](http://test.com)suffix'", function() {
-			var i = 0, text = "[text](http://test.com)suffix";
+		it("should markdown '[text](http://test.com)suffix'", function () {
+			var i = 0,
+			text = "[text](http://test.com)suffix";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(2);
@@ -241,8 +259,9 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("suffix");
 		});
 		
-		it("should not markdown '[t[e]xt](http://test.com)suffix'", function() {
-			var i = 0, text = "[t[e]xt](http://test.com)suffix";
+		it("should not markdown '[t[e]xt](http://test.com)suffix'", function () {
+			var i = 0,
+			text = "[t[e]xt](http://test.com)suffix";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(3);
@@ -251,8 +270,30 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText(")suffix");
 		});
 		
-		it("should not markdown '[http://test3.com](http://test.com)'", function() {
-			var i = 0, text = "[http://test3.com](http://test.com)";
+		it("should not markdown '[text](http://test.com'", function () {
+			var i = 0,
+			text = "[text](http://test.com";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(2);
+			expect(spans[i++]).toBeText("[text](");
+			expect(spans[i++]).toBeHref("http://test.com");
+		});
+		
+		it("should not markdown '[text](http://test.com \"mytitle\"'", function () {
+			var i = 0,
+			text = "[text](http://test.com \"mytitle\"";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(3);
+			expect(spans[i++]).toBeText("[text](");
+			expect(spans[i++]).toBeHref("http://test.com");
+			expect(spans[i++]).toBeText(" \"mytitle\"");
+		});
+		
+		it("should not markdown '[http://test3.com](http://test.com)'", function () {
+			var i = 0,
+			text = "[http://test3.com](http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(5);
@@ -261,6 +302,24 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText("](");
 			expect(spans[i++]).toBeHref("http://test.com");
 			expect(spans[i++]).toBeText(")");
+		});
+		
+		it("should markdown '[text](http://test.com \"mytitle\")'", function () {
+			var i = 0,
+			text = "[text](http://test.com \"mytitle\")";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(1);
+			expect(spans[i++]).toBeHref("http://test.com", "text", "mytitle");
+		});
+		
+		it("should markdown '[text](http://test.com\"mytitle\")'", function () {
+			var i = 0,
+			text = "[text](http://test.com\"mytitle\")";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(1);
+			expect(spans[i++]).toBeHref("http://test.com", "text", "mytitle");
 		});
 		
 	});

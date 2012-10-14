@@ -1,6 +1,6 @@
 {
   "name": "linksoup",
-  "description": "Parses a string into a stream (soup) of text and links",
+  "description": "a javascript library that parses and exposes links found in string data",
   "version": "0.1.0",
   "homepage": "https://github.com/automatonic/linksoup",
   "author": {
@@ -30,5 +30,5 @@
   "devDependencies": {
     "grunt": "~0.3.16"
   },
-  "keywords": []
+  "keywords": ["javascript","links","parsing","markdown","span","string"]
 }
