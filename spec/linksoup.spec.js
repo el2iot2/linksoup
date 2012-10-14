@@ -14,12 +14,25 @@ describe("linksoup", function() {
 				}
 			});
 			this.addMatchers({
-				toBeHref: function(expectedHref) {
+				toBeHref: function(expectedHref, expectedText, expectedTitle) {
 					var actual = this.actual;
-					this.message = function () {
-						return "Expected a link span '" + expectedHref +"' but got '" + JSON.stringify(actual) + "'";
+					var textMessage = "";
+					var titleMessage = ""
+					if (expectedText) {
+						textMessage = "with text '"+expectedText+"' ";
 					}
-					return actual && "href" in actual && actual.href ===  expectedHref;
+					if (expectedTitle) {
+						titleMessage = "with title '"+titleMessage+"' ";
+					}
+					
+					this.message = function () {
+						return "Expected a link span '" + expectedHref +"' "+textMessage+titleMessage+"but got '" + JSON.stringify(actual) + "'";
+					}
+					return actual &&
+						"href" in actual && 
+						actual.href === expectedHref &&
+						(!(expectedText) || actual.text === expectedText) &&
+						(!(expectedTitle) || actual.title === expectedTitle); 
 				}
 			});
 		});
@@ -166,7 +179,7 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeHref("http://test.com");
 		});
 		
-		it("should handle '(http://test.com)'", function() {
+		it("should not markdown '(http://test.com)'", function() {
 			var i = 0, text = "(http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
@@ -176,23 +189,79 @@ describe("linksoup", function() {
 			expect(spans[i++]).toBeText(")");
 		});
 		
-		it("should handle '[text](http://test.com)'", function() {
+		it("should markdown '[text](http://test.com)'", function() {
 			var i = 0, text = "[text](http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
-			//expect(spans.length).toBe(1);
+			expect(spans.length).toBe(1);
 			expect(spans[i++]).toBeHref("http://test.com", "text");
 		});
 		
-		it("should handle '  [text](http://test.com)'", function() {
+		it("should markdown '  [text](http://test.com)'", function() {
 			var i = 0, text = "  [text](http://test.com)";
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans[i++]).toBeText("  ");
-			//expect(spans.length).toBe(1);
+			expect(spans.length).toBe(2);
 			expect(spans[i++]).toBeHref("http://test.com", "text");
 		});
 		
+		it("should markdown '[text](http://test.com)  '", function() {
+			var i = 0, text = "[text](http://test.com)  ";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(2);
+			expect(spans[i++]).toBeHref("http://test.com", "text");
+			expect(spans[i++]).toBeText("  ");
+		});
+		
+		it("should markdown '[text]  (http://test.com)'", function() {
+			var i = 0, text = "[text]  (http://test.com)";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(1);
+			expect(spans[i++]).toBeHref("http://test.com", "text");
+		});
+		
+		it("should markdown 'prefix[text](http://test.com)'", function() {
+			var i = 0, text = "prefix[text](http://test.com)";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans[i++]).toBeText("prefix");
+			expect(spans.length).toBe(2);
+			expect(spans[i++]).toBeHref("http://test.com", "text");
+		});
+		
+		it("should markdown '[text](http://test.com)suffix'", function() {
+			var i = 0, text = "[text](http://test.com)suffix";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(2);
+			expect(spans[i++]).toBeHref("http://test.com", "text");
+			expect(spans[i++]).toBeText("suffix");
+		});
+		
+		it("should not markdown '[t[e]xt](http://test.com)suffix'", function() {
+			var i = 0, text = "[t[e]xt](http://test.com)suffix";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(3);
+			expect(spans[i++]).toBeText("[t[e]xt](");
+			expect(spans[i++]).toBeHref("http://test.com");
+			expect(spans[i++]).toBeText(")suffix");
+		});
+		
+		it("should not markdown '[http://test3.com](http://test.com)'", function() {
+			var i = 0, text = "[http://test3.com](http://test.com)";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(5);
+			expect(spans[i++]).toBeText("[");
+			expect(spans[i++]).toBeHref("http://test3.com");
+			expect(spans[i++]).toBeText("](");
+			expect(spans[i++]).toBeHref("http://test.com");
+			expect(spans[i++]).toBeText(")");
+		});
 		
 	});
 });

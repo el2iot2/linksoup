@@ -5,7 +5,7 @@ With a name inspired by the arcane art of [tag soup parsing](http://en.wikipedia
 When given a string:
 
 ```javascript
-var text = "You should totally visit [my site](http://automatonic.net) (or http://twitter.com/automatonically)";
+var text = "You should totally visit [my site](http://automatonic.net "automanual") (or http://twitter.com/automatonically)";
 ```
     
 *linksoup* returns structured data as "spans":
@@ -15,11 +15,11 @@ var spans = [{
   text: "You should totally visit "
 },{
   text: "my site",
+  title: "automanual",
   href: "http://automatonic.net"
 },{
   text: " (or "
 },{
-  text: "http://twitter.com/automatonically"
   href: "http://twitter.com/automatonically"
 },{
   text: ")"
@@ -37,8 +37,8 @@ This project is in an "alpha" status, and not yet suitable for casual use.
  * Port twitter-text 
    * ~~make routines lint friend(lier)~~
    * ~~remove unused/irrelevant routines~~
-   * adapt url test cases
- * Support markdown style links
+   * ~~adapt url test cases~~
+ * ~~Support markdown style links~~
  * Ensure multi-use code
    * browser wrapper
    * node.js
