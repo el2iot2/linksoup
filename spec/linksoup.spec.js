@@ -3,191 +3,194 @@ var linksoup = require('../lib/linksoup.js');
 describe("linksoup", function() {
 	describe("when parsing spans", function() {
 	
+		beforeEach(function() {
+			this.addMatchers({
+				toBeText: function(expectedText) {
+					var actual = this.actual;
+					this.message = function () {
+						return "Expected a text span '" + expectedText +"' but got '" + JSON.stringify(actual) + "'";
+					}
+					return actual && "text" in actual && !("href" in actual) && actual.text ===  expectedText;
+				}
+			});
+			this.addMatchers({
+				toBeHref: function(expectedHref) {
+					var actual = this.actual;
+					this.message = function () {
+						return "Expected a link span '" + expectedHref +"' but got '" + JSON.stringify(actual) + "'";
+					}
+					return actual && "href" in actual && actual.href ===  expectedHref;
+				}
+			});
+		});
+	
+		
 		//Trying to get all the algorithmic edge cases:
 		it("should handle 'text'", function() {
-			var text = "text";
+			var i = 0, text = "text";
 			expect(linksoup).toBeDefined();
 			var spans = linksoup.parseSpans(text);
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(1);
-			expect(spans[0].text).toBe("text");
-			expect(spans[0].href).not.toBeDefined();
+			expect(spans[i++]).toBeText("text");
 		});
 		
 		it("should handle 'http://automatonic.net'", function() {
-			var text = "http://automatonic.net";
+			var i = 0, text = "http://automatonic.net";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(1);
-			expect(spans[0].text).toBeDefined();
-			expect(spans[0].href).toBe("http://automatonic.net");
+			expect(spans[i++]).toBeHref("http://automatonic.net");
 		});
 		
 		it("should handle '[a.com'", function() {
-			var text = "[a.com";
+			var i = 0, text = "[a.com";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(2);
-			expect(spans[0].text).toBe("[");
-			expect(spans[0].href).not.toBeDefined();
-			expect(spans[1].text).toBeDefined();
-			expect(spans[1].href).toBe("a.com");
+			expect(spans[i++]).toBeText("[");
+			
+			expect(spans[i++]).toBeHref("a.com");
 		});
 		
 		it("should handle 'a.com]'", function() {
-			var text = "a.com]";
+			var i = 0, text = "a.com]";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(2);
-			expect(spans[0].text).toBeDefined();
-			expect(spans[0].href).toBe("a.com");
-			expect(spans[1].text).toBe("]");
-			expect(spans[1].href).not.toBeDefined();
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText("]");
+			
 		});
 		
 		it("should handle a prefix '[a.com]'", function() {
-			var text = "[a.com]";
+			var i = 0, text = "[a.com]";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(3);
-			expect(spans[0].text).toBe("[");
-			expect(spans[0].href).not.toBeDefined();
-			expect(spans[1].text).toBeDefined();
-			expect(spans[1].href).toBe("a.com");
-			expect(spans[2].text).toBe("]");
-			expect(spans[2].href).not.toBeDefined();
+			expect(spans[i++]).toBeText("[");
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText("]");
 		});
 		
 		it("should handle 'a.com,b.com]'", function() {
-			var text = "a.com,b.com]";
+			var i = 0, text = "a.com,b.com]";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(4);
-			expect(spans[0].text).toBeDefined();
-			expect(spans[0].href).toBe("a.com");
-			expect(spans[1].text).toBe(",");
-			expect(spans[1].href).not.toBeDefined();
-			expect(spans[2].text).toBeDefined();
-			expect(spans[2].href).toBe("b.com");
-			expect(spans[3].text).toBe("]");
-			expect(spans[3].href).not.toBeDefined();
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("b.com");
+			expect(spans[i++]).toBeText("]");
+			
 		});
 		
 		it("should handle '[a.com,b.com'", function() {
-			var text = "[a.com,b.com";
+			var i = 0, text = "[a.com,b.com";
 			var spans = linksoup.parseSpans(text);
-			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(4);
-			expect(spans[0].text).toBe("[");
-			expect(spans[0].href).not.toBeDefined();
-			expect(spans[1].text).toBeDefined();
-			expect(spans[1].href).toBe("a.com");
-			expect(spans[2].text).toBe(",");
-			expect(spans[2].href).not.toBeDefined();
-			expect(spans[3].text).toBeDefined();
-			expect(spans[3].href).toBe("b.com");
+			expect(spans[i++]).toBeText("[");
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("b.com");
 		});
 		
 		it("should handle '[a.com,b.com]'", function() {
-			var text = "[a.com,b.com]";
+			var i = 0, text = "[a.com,b.com]";
 			var spans = linksoup.parseSpans(text);
-			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(5);
-			expect(spans[0].text).toBe("[");
-			expect(spans[0].href).not.toBeDefined();
-			expect(spans[1].text).toBeDefined();
-			expect(spans[1].href).toBe("a.com");
-			expect(spans[2].text).toBe(",");
-			expect(spans[2].href).not.toBeDefined();
-			expect(spans[3].text).toBeDefined();
-			expect(spans[3].href).toBe("b.com");
-			expect(spans[4].text).toBe("]");
-			expect(spans[4].href).not.toBeDefined();
+			expect(spans[i++]).toBeText("[");
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("b.com");
+			expect(spans[i++]).toBeText("]");
 		});
 		
 		it("should handle 'a.com,b.com,c.net]'", function() {
-			var text = "a.com,b.com,c.net]";
+			var i = 0, text = "a.com,b.com,c.net]";
 			var spans = linksoup.parseSpans(text);
-			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(6);
-			expect(spans[0].text).toBeDefined();
-			expect(spans[0].href).toBe("a.com");
-			expect(spans[1].text).toBe(",");
-			expect(spans[1].href).not.toBeDefined();
-			expect(spans[2].text).toBeDefined();
-			expect(spans[2].href).toBe("b.com");
-			expect(spans[3].text).toBe(",");
-			expect(spans[3].href).not.toBeDefined();
-			expect(spans[4].text).toBeDefined();
-			expect(spans[4].href).toBe("c.net");
-			expect(spans[5].text).toBe("]");
-			expect(spans[5].href).not.toBeDefined();
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("b.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("c.net");
+			expect(spans[i++]).toBeText("]");
 		});
 		
 		it("should handle '[a.com,b.com,c.net'", function() {
-			var text = "[a.com,b.com,c.net";
+			var i = 0, text = "[a.com,b.com,c.net";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(6);
-			expect(spans[0].text).toBe("[");
-			expect(spans[0].href).not.toBeDefined();
-			expect(spans[1].text).toBeDefined();
-			expect(spans[1].href).toBe("a.com");
-			expect(spans[2].text).toBe(",");
-			expect(spans[2].href).not.toBeDefined();
-			expect(spans[3].text).toBeDefined();
-			expect(spans[3].href).toBe("b.com");
-			expect(spans[4].text).toBe(",");
-			expect(spans[4].href).not.toBeDefined();
-			expect(spans[5].text).toBeDefined();
-			expect(spans[5].href).toBe("c.net");
+			expect(spans[i++]).toBeText("[");
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("b.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("c.net");
 		});
 		
 		it("should handle '[a.com,b.com,c.net]'", function() {
-			var text = "[a.com,b.com,c.net]";
+			var i = 0, text = "[a.com,b.com,c.net]";
 			var spans = linksoup.parseSpans(text);
-			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(7);
-			expect(spans[0].text).toBe("[");
-			expect(spans[0].href).not.toBeDefined();
-			expect(spans[1].text).toBeDefined();
-			expect(spans[1].href).toBe("a.com");
-			expect(spans[2].text).toBe(",");
-			expect(spans[2].href).not.toBeDefined();
-			expect(spans[3].text).toBeDefined();
-			expect(spans[3].href).toBe("b.com");
-			expect(spans[4].text).toBe(",");
-			expect(spans[4].href).not.toBeDefined();
-			expect(spans[5].text).toBeDefined();
-			expect(spans[5].href).toBe("c.net");
-			expect(spans[6].text).toBe("]");
-			expect(spans[6].href).not.toBeDefined();
+			expect(spans[i++]).toBeText("[");
+			expect(spans[i++]).toBeHref("a.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("b.com");
+			expect(spans[i++]).toBeText(",");
+			expect(spans[i++]).toBeHref("c.net");
+			expect(spans[i++]).toBeText("]");
 		});
 		
 		it("should handle '\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com'", function() {
-			var text = "\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com";
+			var i = 0, text = "\uD801\uDC00 http://twitter.com \uD801\uDC00 http://test.com";
 			var spans = linksoup.parseSpans(text);
 			
 			expect(spans).toBeDefined();
 			expect(spans.length).toBe(4);
-			expect(spans[0].text).toBe("\uD801\uDC00 ");
-			expect(spans[0].href).not.toBeDefined();
-			expect(spans[1].text).toBeDefined();
-			expect(spans[1].href).toBe("http://twitter.com");
-			expect(spans[2].text).toBe(" \uD801\uDC00 ");
-			expect(spans[2].href).not.toBeDefined();
-			expect(spans[3].text).toBeDefined();
-			expect(spans[3].href).toBe("http://test.com");
+			expect(spans[i++]).toBeText("\uD801\uDC00 ");
+			expect(spans[i++]).toBeHref("http://twitter.com");
+			expect(spans[i++]).toBeText(" \uD801\uDC00 ");
+			expect(spans[i++]).toBeHref("http://test.com");
+		});
+		
+		it("should handle '(http://test.com)'", function() {
+			var i = 0, text = "(http://test.com)";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans.length).toBe(3);
+			expect(spans[i++]).toBeText("(");
+			expect(spans[i++]).toBeHref("http://test.com");
+			expect(spans[i++]).toBeText(")");
+		});
+		
+		it("should handle '[text](http://test.com)'", function() {
+			var i = 0, text = "[text](http://test.com)";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			//expect(spans.length).toBe(1);
+			expect(spans[i++]).toBeHref("http://test.com", "text");
+		});
+		
+		it("should handle '  [text](http://test.com)'", function() {
+			var i = 0, text = "  [text](http://test.com)";
+			var spans = linksoup.parseSpans(text);
+			expect(spans).toBeDefined();
+			expect(spans[i++]).toBeText("  ");
+			//expect(spans.length).toBe(1);
+			expect(spans[i++]).toBeHref("http://test.com", "text");
 		});
 		
 		
