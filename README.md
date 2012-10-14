@@ -26,7 +26,7 @@ var spans = [{
 }];
 ```
 
-that allows you to represent the "link soup" in a templating system (with appropriate escaping) and rendering to HTML.
+that allows you to represent the "link soup" in a templating system (with appropriate escaping) and render the result to HTML.
 
 ##Status
 
@@ -34,7 +34,7 @@ This project is in an "alpha" status, and not yet suitable for casual use.
 
 ###To Do
 
- * Port twitter-text 
+ * ~~Port twitter-text~~
    * ~~make routines lint friend(lier)~~
    * ~~remove unused/irrelevant routines~~
    * ~~adapt url test cases~~
