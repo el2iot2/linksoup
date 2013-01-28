@@ -1,0 +1,7 @@
+{
+  "name": "linksoup",
+  "version": "0.1.0",
+  "main": "./lib/linksoup.js",
+  "dependencies": {
+  }
+}
