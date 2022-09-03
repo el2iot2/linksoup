@@ -74,7 +74,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ### Tests
 
-Tests are defined as [Jasmine specs](http://pivotal.github.com/jasmine/) and launched via `jasmine-node`. Like the code itself, some test cases are adapted from the `twitter-text` project.
+Tests are defined as [Jasmine specs](https://jasmine.github.io/) and launched via `jasmine-node`. Like the code itself, some test cases are adapted from the `twitter-text` project.
 
 ####Initial setup:
 
@@ -94,7 +94,7 @@ _(Nothing yet)_
 ##Acknowledgments
 
  * [twitter-text](https://github.com/twitter/twitter-text-js)
- * [jasmine](https://github.com/pivotal/jasmine)
+ * [jasmine](https://github.com/jasmine/jasmine)
  * [jasmine-node](https://github.com/mhevery/jasmine-node)
 
 ## License
